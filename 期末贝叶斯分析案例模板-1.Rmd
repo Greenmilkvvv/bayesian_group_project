@@ -1,0 +1,151 @@
+---
+title: "Case study for Bayesian Statistics"
+author: |
+    | 姓名1(学号)
+    | 姓名2(学号)
+#date: "`r format(Sys.time(), '%B %d, %Y')`"
+documentclass: ctexart
+fontsize: 12pt
+geometry: tmargin=1.8cm, bmargin=1.8cm, lmargin=2.1cm, rmargin=2.1cm
+output:
+#  pdf_document:  
+  rticles::ctex:
+    keep_tex: true
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+    latex_engine: xelatex
+classoption: "hyperref,"
+header-includes: 
+#  - \usepackage{fontspec, xunicode, xltxtra}    
+  - \usepackage{ctex}
+  - \usepackage{bm,xcolor}
+  - \usepackage{fancyhdr}
+  
+  - \pagestyle{fancy}
+  - \fancyhead[L]{Case study for Bayesian Statistics}
+  - \fancyfoot[R]{\thepage}
+  - \fancyfoot[C]{School of Statistics, ECNU}  
+# 设置页眉线与页脚线宽度与颜色
+  - \renewcommand{\headrule}{{\color{red}\hrule width\headwidth height\headrulewidth \vskip-\headrulewidth}}
+  - \renewcommand{\footrule}{{\color{black}\vskip-\footruleskip\vskip-\footrulewidth \hrule width\headwidth height\footrulewidth\vskip\footruleskip}}
+  - \renewcommand{\headrulewidth}{0.8pt}
+  - \renewcommand{\footrulewidth}{0.6pt}
+  - \renewcommand\contentsname{\bfseries Contents}  
+# 定制章节标题格式 
+  - \usepackage[sf,raggedright]{titlesec}
+  - \usepackage{titletoc}
+  - \titleformat{\section}{\bfseries\large\color{blue}}{\bfseries\thesection}{0.5em}{}
+#  - \titleformat{\subsection}{\bfseries\large}{\bfseries\thesubsection}{0.5em}{}
+  - \titlespacing{\section}{0pt}{3.5ex plus .1ex minus .2ex}{1.5\wordsep}
+#  - \titlespacing{\subsection}{0pt}{1.5ex plus .1ex minus .2ex}{\wordsep}
+# hyperline
+  - \hypersetup{colorlinks=true, breaklinks=true, linkcolor=blue}
+---
+
+\newpage
+\addcontentsline{toc}{section}{Abstract}
+\noindent\textbf{Abstract}:
+State the background of the study, data, methodology and main conclusions.
+
+**Keywords**: 3-5 keywords 
+
+\newpage
+
+# Data description
+
+State the data source, data structure, response variable, predictive variables, etc. 
+
+
+
+# Methods used in data analysis
+
+## Maximum likelihood estimation
+
+## EM algorithm
+
+## Bayesian inference based on MCMC
+
+
+
+#  Data exploration and statistical analysis
+
+## Data exploration
+
+## Statistical analysis
+
+## Comparison of the different methods
+
+
+# Main results
+
+## Simulation study
+
+## Real data analysis
+
+
+1. Suppose the uniform distribution $Beta(2, 5)$ is used for the success probability $p$ of Kobe Bryant, what is posterior distribution of $p$? Plot the prior, likelihood and posterior density on the same graph in R. 
+
+```{r}
+kobe <- read.csv("/Users/yctang/Rdata/kobe.csv", header = TRUE)
+
+s = sum(kobe$basket == "H")
+f = sum(kobe$basket == "M")
+a = 2; b = 5
+# R code for question 1.
+curve(dbeta(x,a,b),
+      xlim=c(0, 1), ylim=c(0,10), 
+      xlab="p",ylab="Density",
+      lty=3,lwd=2) #prior
+curve(dbeta(x,s+1,f+1),
+      add=TRUE,lty=2,lwd=2) #likelihood
+curve(dbeta(x,a+s,b+f),  
+      add=TRUE, lty=1,lwd=2) # posterior 
+legend(.7,4,c("Prior","Likelihood","Posterior"),
+lty=c(3,2,1),lwd=c(3,3,3))
+```
+
+1. Suppose Kobe Bryant would play a new game the following quarter and he made 20 shots. Draw a sample of size 1000 from the posterior predictive distribution of $p$, and plot the frequencies. Compare (on the graph)  with the analytic result based on the posterior predictive distribution. 
+
+
+```{r}
+# R code for question 2.
+m = 1000
+ns = 20
+p = rbeta(m, a+s, b+f)
+y = rbinom(m, ns, p)
+#y = rbb(m, ns, a+s, b+f)
+freq = table(y)
+ys = as.integer(names(freq))
+predprob = freq/sum(freq)
+plot(ys, predprob, type="h", xlab="y",
+ylab="Predictive Probability")
+library(LearnBayes)
+TruePred1 = pbetap(c(a+s,b+f), ns, ys)
+points(ys, TruePred1, type="p", col='red')
+```
+
+1. Calculate the 95\% equal-tail and HPD (highest posterior density) posterior credible intervals of $p$ based on the posterior sample.  Compare with the analytic results based on the posterior density. Fill the results in the table below.
+
+```{r, message=FALSE}
+# R code for question 3.
+round(quantile(p,  prob= c(0.025, 0.975)),4)
+round(qbeta(c(0.025, 0.975), a+s, b+f ),4)
+library(TeachingDemos)
+round(emp.hpd(p, conf=0.95),4)
+round(hpd(qbeta, shape1 = a+s, shape2 = b+f, conf = 0.95),4)
+```
+
+# Conclusions and remarks
+
+Main conclusions comes here!
+
+\addcontentsline{toc}{section}{References}
+\noindent\textbf{References}
+
+1. 吴喜之. 统计学: 从数据到结论(第四版). 中国统计出版社. 2013. 
+
+1. Larry Wasserman. All of Statistics--A Concise Course in Statistical Inference. 2003. (中译本---张波等. 统计学完全教程. 科学出版社. 2008.) [github上有习题的R/python代码]
+
+1. David S. Moore， Willian I. Notz， Michael A. Fligner. The Basic Practive of Statistics (6th Ed.). W.H. Freeman and Company. 2013. 
+
