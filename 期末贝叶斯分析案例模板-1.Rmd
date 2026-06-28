@@ -11,7 +11,7 @@ output:
 #  pdf_document:  
   rticles::ctex:
     keep_tex: true
-    fig_caption: yes
+    fig_caption: **yes**
     number_sections: yes
     toc: yes
     latex_engine: xelatex
